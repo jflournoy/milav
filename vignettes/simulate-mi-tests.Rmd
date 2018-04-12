@@ -22,9 +22,16 @@ knitr::opts_chunk$set(
 library(milav)
 library(simsem)
 library(future)
-nworkers <- 28
-data_dir <- '/gpfs/projects/dsnlab/flournoy/data/mi_sim_results'
-niter <- 1000
+if(grepl('(^n\\d|talapas-ln1)', system('hostname', intern = T))){
+  nworkers <- 28
+  data_dir <- '/gpfs/projects/dsnlab/flournoy/data/mi_sim_results'
+  niter <- 1000
+} else {
+  nworkers <- future::availableCores()
+  data_dir <- '/gpfs/projects/dsnlab/flournoy/data/mi_sim_results'
+  niter <- 2
+}
+message('Workers: ', nworkers)
 
 if(!dir.exists(data_dir)){
   dir.create(data_dir)
