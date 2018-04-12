@@ -12,7 +12,124 @@ vignette: >
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
+  warning = T, message = F, error = T, echo = T,
+  collapse = T,
   comment = "#>"
 )
 ```
 
+```{r}
+library(milav)
+library(simsem)
+library(future)
+nworkers <- 8
+data_dir <- '/data/jflournoy/simrez'
+niter <- 2
+
+if(!dir.exists(data_dir)){
+  dir.create(data_dir)
+}
+
+mitest <- function(generative_mod, unconstrained_mod, constrained_mod, fit_measures, sample_nobs = c(2.5e2,2.5e2,2.5e2,2.5e2), return_all = F){
+  simdata <- lavaan::simulateData(generative_mod, 
+                                  sample.nobs = sample_nobs,
+                                  int.lv.free = T, 
+                                  auto.fix.first = F, int.ov.free = TRUE, auto.var = TRUE, 
+                                  auto.cov.lv.x = TRUE, auto.cov.y = TRUE,
+                                  standardized = TRUE, empirical = F)
+  unconstrained_fit <- milav::sem_invar(model = unconstrained_mod, data = simdata, group = 'group')
+  constrained_fit <- milav::sem_invar(model = constrained_mod, data = simdata, group = 'group')
+  fit_diff <- diff(
+    do.call(rbind, 
+            lapply(list(unconstrained_fit, constrained_fit),
+                   lavaan::fitmeasures, fit.measures = fit_measures)))
+  if(return_all){
+    return(list(fit_diff = fit_diff, 
+                data = simdata, 
+                unconstrained_fit = unconstrained_fit, 
+                constrained_fit = constrained_fit))
+  }
+  else{
+    return(fit_diff)
+  }
+}
+
+create_generative_mod <- function(nitems, loadings_from, loadings_to){
+  loadings <- as.character(round(runif(nitems, loadings_from, loadings_to),2))
+  names(loadings) <- paste0('c\\((L',1:nitems,',* *)+\\)')
+  template <- milav::create_lav_invariance_model(factor_name = 'F',
+                                                 manifest_vec = paste0('x', 1:nitems),
+                                                 'strict')
+  generative_mod <- stringr::str_replace_all(template, loadings)
+  return(generative_mod)
+}
+
+run_mi_sims <- function(niter, nitems, loadings_from, loadings_to, unconstrained_mod, constrained_mod, fit_measures, sample_nobs = c(2.5e2,2.5e2,2.5e2,2.5e2)) {
+  require(future)
+  require(listenv)
+  fit_diffs <- listenv::listenv()
+  for(i in 1:niter){
+    fit_diffs[[i]] <- future({
+      message(paste(c('Iter: ', ', L_f: ', ', L_t: '), 
+                    c(i, loadings_from, loadings_to)))
+      generative_mod <- create_generative_mod(nitems = nitems,
+                                              loadings_from = loadings_from,
+                                              loadings_to = loadings_to)
+      
+      fit_diff <- mitest(generative_mod = generative_mod,
+                         unconstrained_mod = unconstrained_mod,
+                         constrained_mod = constrained_mod,
+                         fit_measures = fit_measures,
+                         sample_nobs = sample_nobs, 
+                         return_all = F)
+      fit_diff
+    })   
+  }
+  return(fit_diffs)
+}
+
+nitems <- 4
+fit_measures <- c('mfi', 'cfi', 'rmsea')
+long_strict_mod <- milav::create_lav_invariance_model(factor_name = 'F',
+                                   manifest_vec = paste0('x', 1:nitems),
+                                   'long_strict')
+group_strict_mod <- milav::create_lav_invariance_model(factor_name = 'F',
+                                   manifest_vec = paste0('x', 1:nitems),
+                                   'strict')
+
+
+plan(tweak(multiprocess, gc = T, workers = nworkers))
+l_fut <- listenv::listenv()
+l_fut[['Loadings .40 - .49']] <- run_mi_sims(niter = niter, nitems = 4, loadings_from = .4, loadings_to = .5, 
+                   unconstrained_mod = long_strict_mod, constrained_mod = group_strict_mod,
+                   fit_measures = fit_measures)
+l_fut[['Loadings .5 - .59']] <- run_mi_sims(niter = niter, nitems = 4, loadings_from = .5, loadings_to = .59, 
+                   unconstrained_mod = long_strict_mod, constrained_mod = group_strict_mod,
+                   fit_measures = fit_measures)
+l_fut[['Loadings .6 - .69']] <- run_mi_sims(niter = niter, nitems = 4, loadings_from = .6, loadings_to = .69, 
+                   unconstrained_mod = long_strict_mod, constrained_mod = group_strict_mod,
+                   fit_measures = fit_measures)
+l_fut[['Loadings .7 - .79']] <- run_mi_sims(niter = niter, nitems = 4, loadings_from = .7, loadings_to = .79, 
+                   unconstrained_mod = long_strict_mod, constrained_mod = group_strict_mod,
+                   fit_measures = fit_measures)
+l_fut[['Loadings .8 - .89']] <- run_mi_sims(niter = niter, nitems = 4, loadings_from = .8, loadings_to = .89, 
+                   unconstrained_mod = long_strict_mod, constrained_mod = group_strict_mod,
+                   fit_measures = fit_measures)
+l_fut[['Loadings .9 - .99']] <- run_mi_sims(niter = niter, nitems = 4, loadings_from = .9, loadings_to = .99, 
+                   unconstrained_mod = long_strict_mod, constrained_mod = group_strict_mod,
+                   fit_measures = fit_measures)
+
+l_rez <- lapply(l_fut, lapply, future::value)
+
+saveRDS(l_rez, file = file.path(data_dir, 'mi_simulation_results.RDS'))
+```
+
+```{r results = 'asis'}
+lapply(seq_along(l_rez), function(i, l, n){
+  knitr::kable(
+    apply(do.call(rbind, l[[i]]), 
+          2, quantile, 
+          probs = c(.01, .05, .5, .95, .99)),
+    caption = n[[i]])
+}, l = l_rez, n = names(l_rez))
+```
