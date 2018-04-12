@@ -22,9 +22,9 @@ knitr::opts_chunk$set(
 library(milav)
 library(simsem)
 library(future)
-nworkers <- 8
-data_dir <- '/data/jflournoy/simrez'
-niter <- 2
+nworkers <- 28
+data_dir <- '/gpfs/projects/dsnlab/flournoy/data/mi_sim_results'
+niter <- 1000
 
 if(!dir.exists(data_dir)){
   dir.create(data_dir)
