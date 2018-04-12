@@ -2,7 +2,11 @@
 title: "Simulating Measurement Invariance Tests"
 author: "John Flournoy"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output: 
+  bookdown::html_document2:
+    toc: yes
+    toc_depth: 2
+    number_sections: FALSE
 vignette: >
   %\VignetteIndexEntry{Vignette Title}
   %\VignetteEngine{knitr::rmarkdown}
@@ -22,9 +26,9 @@ knitr::opts_chunk$set(
 library(milav)
 library(simsem)
 library(future)
-nworkers <- 28
+nworkers <- 8
 data_dir <- '/gpfs/projects/dsnlab/flournoy/data/mi_sim_results'
-niter <- 1000
+niter <- 2
 
 if(!dir.exists(data_dir)){
   dir.create(data_dir)
