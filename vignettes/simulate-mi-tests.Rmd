@@ -147,11 +147,12 @@ if(!file.exists(savefile)){
 
 ```{r results='asis'}
 for(i in seq_along(l_rez)){
-  print(knitr::kable(
+  cat('\n\n')
+  cat(paste(knitr::kable(
     apply(do.call(rbind, l_rez[[i]]), 
           2, quantile, 
           probs = c(.01, .05, .5, .95, .99)),
-    caption = names(l_rez)[[i]], digits = 4))
+    caption = names(l_rez)[[i]], digits = 4), collapse = '\n'))
 }
 ```
 
