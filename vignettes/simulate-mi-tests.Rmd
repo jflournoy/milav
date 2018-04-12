@@ -2,7 +2,10 @@
 title: "Simulating Measurement Invariance Tests"
 author: "John Flournoy"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 2
 vignette: >
   %\VignetteIndexEntry{Vignette Title}
   %\VignetteEngine{knitr::rmarkdown}
@@ -20,7 +23,6 @@ knitr::opts_chunk$set(
 
 ```{r}
 library(milav)
-library(simsem)
 library(future)
 if(grepl('(^n\\d|talapas-ln1)', system('hostname', intern = T))){
   nworkers <- 28
@@ -105,7 +107,7 @@ group_strict_mod <- milav::create_lav_invariance_model(factor_name = 'F',
                                    'strict')
 savefile <- file.path(data_dir, 'mi_simulation_results.RDS')
 
-if(file.exists(savefile)){
+if(!file.exists(savefile)){
   plan(tweak(multiprocess, gc = T, workers = nworkers))
   l_fut <- listenv::listenv()
   l_fut[['Loadings .40 - .49']] <- run_mi_sims(
@@ -141,15 +143,19 @@ if(file.exists(savefile)){
 }
 ```
 
-```{r results = 'asis'}
-lapply(seq_along(l_rez), function(i, l, n){
-  knitr::kable(
-    apply(do.call(rbind, l[[i]]), 
+# Result tables
+
+```{r results='asis'}
+for(i in seq_along(l_rez)){
+  print(knitr::kable(
+    apply(do.call(rbind, l_rez[[i]]), 
           2, quantile, 
           probs = c(.01, .05, .5, .95, .99)),
-    caption = n[[i]], digits = 4)
-}, l = l_rez, n = names(l_rez))
+    caption = names(l_rez)[[i]], digits = 4))
+}
 ```
+
+# Result plots
 
 ## MFI Plots
 
@@ -190,14 +196,15 @@ plot_mi_rez <- function(df, xvar, i, n){
 }
 ```
 
-```{r mfiplots}
+```{r mfiplots, fig.width=6, fig.height=5}
 nope <- lapply(seq_along(l_rez), function(i, l, n){
   print(plot_mi_rez(do.call(rbind, l[[i]]), 'mfi', i, n))
 }, l = l_rez, n = names(l_rez))
 ```
+
 ## CFI Plots
 
-```{r cfiplots}
+```{r cfiplots, fig.width=6, fig.height=5}
 nope <- lapply(seq_along(l_rez), function(i, l, n){
   print(plot_mi_rez(do.call(rbind, l[[i]]), 'cfi', i, n))
 }, l = l_rez, n = names(l_rez))
