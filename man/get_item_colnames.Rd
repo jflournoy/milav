@@ -7,7 +7,7 @@
 get_item_colnames(manifest_vec)
 }
 \arguments{
-\item{manifest_vec}{}
+\item{manifest_vec}{manifest_vec}
 }
 \description{
 get_item_colnames

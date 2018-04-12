@@ -7,7 +7,11 @@
 process_invariance_tests(invar_models_list, factor_name, fit_measures)
 }
 \arguments{
-\item{fit_measures}{}
+\item{invar_models_list}{invar_models_list}
+
+\item{factor_name}{factor_name}
+
+\item{fit_measures}{fit_measures}
 }
 \description{
 process_invariance_tests

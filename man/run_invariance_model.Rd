@@ -8,7 +8,19 @@ run_invariance_model(factor_name, manifest_vec, item_data, type = "baseline",
   group = NULL, num_groups = 4, ...)
 }
 \arguments{
-\item{...}{}
+\item{factor_name}{factor_name}
+
+\item{manifest_vec}{manifest_vec}
+
+\item{item_data}{item_data}
+
+\item{type}{type}
+
+\item{group}{group}
+
+\item{num_groups}{num_groups}
+
+\item{...}{...}
 }
 \description{
 run_invariance_model

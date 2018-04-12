@@ -7,7 +7,7 @@
 create_lav_id_strat_widaman(factor_name)
 }
 \arguments{
-\item{factor_name}{}
+\item{factor_name}{factor_name}
 }
 \description{
 create_lav_id_strat_widaman

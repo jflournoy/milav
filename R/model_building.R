@@ -1,7 +1,7 @@
 #' check_manifests_exist
 #'
-#' @param manifest_vec
-#' @param aDF
+#' @param manifest_vec manifest_vec
+#' @param aDF aDF
 #'
 #' @return
 #' @export
@@ -14,7 +14,7 @@ check_manifests_exist <- function(manifest_vec, aDF){
 
 #' create_lav_id_strat_widaman
 #'
-#' @param factor_name
+#' @param factor_name factor_name
 #'
 #' @return
 #' @export
@@ -27,15 +27,15 @@ create_lav_id_strat_widaman <- function(factor_name){
 
 #' create_lav_growth_model
 #'
-#' @param factor_name
-#' @param manifest_vec
-#' @param int.i.group_equal
-#' @param var.i.group_equal
-#' @param int.s.group_equal
-#' @param var.s.group_equal
-#' @param cov.group_equal
-#' @param num_groups
-#' @param center_wave
+#' @param factor_name factor_name
+#' @param manifest_vec manifest_vec
+#' @param int int.i.group_equal
+#' @param var var.i.group_equal
+#' @param int int.s.group_equal
+#' @param var var.s.group_equal
+#' @param cov cov.group_equal
+#' @param num_groups num_groups
+#' @param center_wave center_wave
 #'
 #' @return
 #' @export
@@ -83,11 +83,11 @@ create_lav_growth_model <- function(factor_name, manifest_vec, int.i.group_equal
 
 #' create_lav_factor_loadings
 #'
-#' @param factor_name
-#' @param manifest_vec
-#' @param group_equal
-#' @param long_free
-#' @param num_groups
+#' @param factor_name factor_name
+#' @param manifest_vec manifest_vec
+#' @param group_equal group_equal
+#' @param long_free long_free
+#' @param num_groups num_groups
 #'
 #' @return
 #' @export
@@ -127,11 +127,11 @@ create_lav_factor_loadings <- function(factor_name, manifest_vec, group_equal = 
 
 #' create_lav_ints
 #'
-#' @param manifest_vec
-#' @param group_equal
-#' @param long_free
-#' @param num_groups
-#' @param fix_first_intercept
+#' @param manifest_vec manifest_vec
+#' @param group_equal group_equal
+#' @param long_free long_free
+#' @param num_groups num_groups
+#' @param fix_first_intercept fix_first_intercept
 #'
 #' @return
 #' @export
@@ -164,10 +164,10 @@ create_lav_ints <- function(manifest_vec, group_equal = F, long_free = F, num_gr
 
 #' create_lav_resid_var
 #'
-#' @param manifest_vec
-#' @param group_equal
-#' @param long_free
-#' @param num_groups
+#' @param manifest_vec manifest_vec
+#' @param group_equal group_equal
+#' @param long_free long_free
+#' @param num_groups num_groups
 #'
 #' @return
 #' @export
@@ -197,10 +197,10 @@ create_lav_resid_var <- function(manifest_vec, group_equal = F, long_free = F, n
 
 #' create_lav_resid_covar
 #'
-#' @param manifest_vec
-#' @param group_equal
-#' @param long_free
-#' @param num_groups
+#' @param manifest_vec manifest_vec
+#' @param group_equal group_equal
+#' @param long_free long_free
+#' @param num_groups num_groups
 #'
 #' @return
 #' @export
@@ -236,12 +236,12 @@ create_lav_resid_covar <- function(manifest_vec, group_equal = F, long_free = F,
 
 #' create_lav_invariance_model
 #'
-#' @param factor_name
-#' @param manifest_vec
-#' @param type
-#' @param num_groups
-#' @param no_widman
-#' @param fix_first_intercept
+#' @param factor_name factor_name
+#' @param manifest_vec manifest_vec
+#' @param type type
+#' @param num_groups num_groups
+#' @param no_widman no_widman
+#' @param fix_first_intercept fix_first_intercept
 #'
 #' @return
 #' @export
@@ -391,8 +391,8 @@ create_lav_invariance_model <- function(factor_name, manifest_vec, type = c('unc
 
 #' get_factor_items
 #'
-#' @param scoring_df
-#' @param factor_name
+#' @param scoring_df scoring_df
+#' @param factor_name factor_name
 #'
 #' @return
 #' @export
@@ -402,7 +402,7 @@ get_factor_items <- function(scoring_df, factor_name){
 
 #' get_item_colnames
 #'
-#' @param manifest_vec
+#' @param manifest_vec manifest_vec
 #'
 #' @return
 #' @export
@@ -412,9 +412,9 @@ get_item_colnames <- function(manifest_vec){
 
 #' sem_invar
 #'
-#' @param model
-#' @param data
-#' @param ...
+#' @param model model
+#' @param data data
+#' @param ... ...
 #'
 #' @return
 #' @export
@@ -433,9 +433,9 @@ sem_invar <- function(model, data, ...){
 
 #' growth_cofs
 #'
-#' @param model
-#' @param data
-#' @param ...
+#' @param model model
+#' @param data data
+#' @param ... ...
 #'
 #' @return
 #' @export
@@ -456,13 +456,13 @@ growth_cofs <- function(model, data, ...){
 
 #' run_invariance_model
 #'
-#' @param factor_name
-#' @param manifest_vec
-#' @param item_data
-#' @param type
-#' @param group
-#' @param num_groups
-#' @param ...
+#' @param factor_name factor_name
+#' @param manifest_vec manifest_vec
+#' @param item_data item_data
+#' @param type type
+#' @param group group
+#' @param num_groups num_groups
+#' @param ... ...
 #'
 #' @return
 #' @export
@@ -488,11 +488,11 @@ run_invariance_model <- function(factor_name, manifest_vec, item_data, type = 'b
 
 #' run_invariance_tests
 #'
-#' @param factor_name
-#' @param manifest_vec
-#' @param item_data
-#' @param group
-#' @param ...
+#' @param factor_name factor_name
+#' @param manifest_vec manifest_vec
+#' @param item_data item_data
+#' @param group group
+#' @param ... ...
 #'
 #' @return
 #' @export
@@ -530,9 +530,9 @@ run_invariance_tests <- function(factor_name, manifest_vec, item_data, group, ..
 
 #' process_invariance_tests
 #'
-#' @param invar_models_list
-#' @param factor_name
-#' @param fit_measures
+#' @param invar_models_list invar_models_list
+#' @param factor_name factor_name
+#' @param fit_measures fit_measures
 #'
 #' @return
 #' @export
@@ -593,13 +593,13 @@ process_invariance_tests <- function(invar_models_list, factor_name, fit_measure
 
 #' test_factors_for_invariance
 #'
-#' @param factor_names
-#' @param indicators_df
-#' @param item_data
-#' @param fit_measures
-#' @param group
-#' @param save_fits
-#' @param ...
+#' @param factor_names factor_names
+#' @param indicators_df indicators_df
+#' @param item_data item_data
+#' @param fit_measures fit_measures
+#' @param group group
+#' @param save_fits save_fits
+#' @param ... ...
 #'
 #' @return
 #' @export

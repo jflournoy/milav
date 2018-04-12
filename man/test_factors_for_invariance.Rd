@@ -9,7 +9,19 @@ test_factors_for_invariance(factor_names, indicators_df, item_data,
   group, save_fits = F, ...)
 }
 \arguments{
-\item{...}{}
+\item{factor_names}{factor_names}
+
+\item{indicators_df}{indicators_df}
+
+\item{item_data}{item_data}
+
+\item{fit_measures}{fit_measures}
+
+\item{group}{group}
+
+\item{save_fits}{save_fits}
+
+\item{...}{...}
 }
 \description{
 test_factors_for_invariance

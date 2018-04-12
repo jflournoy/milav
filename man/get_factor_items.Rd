@@ -7,7 +7,9 @@
 get_factor_items(scoring_df, factor_name)
 }
 \arguments{
-\item{factor_name}{}
+\item{scoring_df}{scoring_df}
+
+\item{factor_name}{factor_name}
 }
 \description{
 get_factor_items

@@ -7,7 +7,11 @@
 growth_cofs(model, data, ...)
 }
 \arguments{
-\item{...}{}
+\item{model}{model}
+
+\item{data}{data}
+
+\item{...}{...}
 }
 \description{
 growth_cofs

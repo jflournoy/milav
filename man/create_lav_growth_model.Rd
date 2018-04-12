@@ -9,7 +9,23 @@ create_lav_growth_model(factor_name, manifest_vec, int.i.group_equal = F,
   cov.group_equal = F, num_groups = 4, center_wave = 1)
 }
 \arguments{
-\item{center_wave}{}
+\item{factor_name}{factor_name}
+
+\item{manifest_vec}{manifest_vec}
+
+\item{num_groups}{num_groups}
+
+\item{center_wave}{center_wave}
+
+\item{int}{int.i.group_equal}
+
+\item{var}{var.i.group_equal}
+
+\item{int}{int.s.group_equal}
+
+\item{var}{var.s.group_equal}
+
+\item{cov}{cov.group_equal}
 }
 \description{
 create_lav_growth_model

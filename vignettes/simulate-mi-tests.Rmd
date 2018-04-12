@@ -25,13 +25,15 @@ knitr::opts_chunk$set(
 library(milav)
 library(future)
 if(grepl('(^n\\d|talapas-ln1)', system('hostname', intern = T))){
-  nworkers <- 28*4
+  nworkers <- 28
   data_dir <- '/gpfs/projects/dsnlab/flournoy/data/mi_sim_results'
   niter <- 5000
+  plan(tweak(multiprocess, gc = T, workers = nworkers))
 } else {
   nworkers <- future::availableCores()
   data_dir <- '/data/jflournoy/simrez/'
   niter <- 2
+  plan(tweak(multiprocess, gc = T, workers = nworkers))
 }
 message('Workers: ', nworkers)
 
@@ -108,7 +110,6 @@ group_strict_mod <- milav::create_lav_invariance_model(factor_name = 'F',
 savefile <- file.path(data_dir, 'mi_simulation_results.RDS')
 
 if(!file.exists(savefile)){
-  plan(tweak(multiprocess, gc = T, workers = nworkers))
   l_fut <- listenv::listenv()
   l_fut[['Loadings .40 - .49']] <- run_mi_sims(
     niter = niter, nitems = 4, loadings_from = .4, loadings_to = .5, 
@@ -146,6 +147,11 @@ if(!file.exists(savefile)){
 # Result tables
 
 ```{r results='asis'}
+all <- do.call(rbind, lapply(l_rez, do.call, what = rbind))
+
+knitr::kable(apply(all, 2, quantile, probs = c(.01, .05, .5, .95, .99)),
+             caption = 'Quantiles over all iterations')
+
 for(i in seq_along(l_rez)){
   cat('\n\n')
   cat(paste(knitr::kable(
@@ -157,12 +163,9 @@ for(i in seq_along(l_rez)){
 ```
 
 # Result plots
-
-## MFI Plots
-
 ```{r echo=F}
 plot_mi_rez <- function(df, xvar, i, n){
-  mfi.q <- quantile(df[,1], probs = c(.01, .05, .5))
+  mfi.q <- quantile(df[,which(colnames(df) == xvar)], probs = c(.01, .05, .5))
   aplot <- ggplot2::ggplot(
     as.data.frame(df),
     ggplot2::aes_string(x = xvar))+
@@ -196,6 +199,15 @@ plot_mi_rez <- function(df, xvar, i, n){
   return(aplot)
 }
 ```
+
+
+```{r echo=F}
+plot_mi_rez(all, xvar = 'mfi', i = 1, c('All MFI'))
+```
+
+## MFI Plots
+
+
 
 ```{r mfiplots, fig.width=6, fig.height=5}
 nope <- lapply(seq_along(l_rez), function(i, l, n){

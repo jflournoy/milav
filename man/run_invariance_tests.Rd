@@ -7,7 +7,15 @@
 run_invariance_tests(factor_name, manifest_vec, item_data, group, ...)
 }
 \arguments{
-\item{...}{}
+\item{factor_name}{factor_name}
+
+\item{manifest_vec}{manifest_vec}
+
+\item{item_data}{item_data}
+
+\item{group}{group}
+
+\item{...}{...}
 }
 \description{
 run_invariance_tests

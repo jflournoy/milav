@@ -8,7 +8,15 @@ create_lav_factor_loadings(factor_name, manifest_vec, group_equal = F,
   long_free = F, num_groups = 4)
 }
 \arguments{
-\item{num_groups}{}
+\item{factor_name}{factor_name}
+
+\item{manifest_vec}{manifest_vec}
+
+\item{group_equal}{group_equal}
+
+\item{long_free}{long_free}
+
+\item{num_groups}{num_groups}
 }
 \description{
 create_lav_factor_loadings

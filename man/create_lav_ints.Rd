@@ -8,7 +8,15 @@ create_lav_ints(manifest_vec, group_equal = F, long_free = F,
   num_groups = 4, fix_first_intercept = F)
 }
 \arguments{
-\item{fix_first_intercept}{}
+\item{manifest_vec}{manifest_vec}
+
+\item{group_equal}{group_equal}
+
+\item{long_free}{long_free}
+
+\item{num_groups}{num_groups}
+
+\item{fix_first_intercept}{fix_first_intercept}
 }
 \description{
 create_lav_ints

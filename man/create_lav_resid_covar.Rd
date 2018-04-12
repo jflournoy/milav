@@ -8,7 +8,13 @@ create_lav_resid_covar(manifest_vec, group_equal = F, long_free = F,
   num_groups = 4)
 }
 \arguments{
-\item{num_groups}{}
+\item{manifest_vec}{manifest_vec}
+
+\item{group_equal}{group_equal}
+
+\item{long_free}{long_free}
+
+\item{num_groups}{num_groups}
 }
 \description{
 create_lav_resid_covar

@@ -10,7 +10,17 @@ create_lav_invariance_model(factor_name, manifest_vec,
   fix_first_intercept = F)
 }
 \arguments{
-\item{fix_first_intercept}{}
+\item{factor_name}{factor_name}
+
+\item{manifest_vec}{manifest_vec}
+
+\item{type}{type}
+
+\item{num_groups}{num_groups}
+
+\item{no_widman}{no_widman}
+
+\item{fix_first_intercept}{fix_first_intercept}
 }
 \description{
 create_lav_invariance_model

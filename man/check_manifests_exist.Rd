@@ -7,7 +7,9 @@
 check_manifests_exist(manifest_vec, aDF)
 }
 \arguments{
-\item{aDF}{}
+\item{manifest_vec}{manifest_vec}
+
+\item{aDF}{aDF}
 }
 \description{
 check_manifests_exist
