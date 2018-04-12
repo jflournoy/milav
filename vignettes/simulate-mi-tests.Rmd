@@ -28,7 +28,7 @@ if(grepl('(^n\\d|talapas-ln1)', system('hostname', intern = T))){
   niter <- 1000
 } else {
   nworkers <- future::availableCores()
-  data_dir <- '/gpfs/projects/dsnlab/flournoy/data/mi_sim_results'
+  data_dir <- '/data/jflournoy/simrez/'
   niter <- 2
 }
 message('Workers: ', nworkers)
