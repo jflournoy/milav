@@ -149,7 +149,7 @@ if(!file.exists(savefile)){
 ```{r results='asis'}
 all <- do.call(rbind, lapply(l_rez, do.call, what = rbind))
 
-knitr::kable(apply(all, 2, quantile, probs = c(.01, .05, .5, .95, .99)),
+knitr::kable(apply(all, 2, quantile, probs = c(.005/(8), .005, .01, .05, .5, .95, .99)),
              caption = 'Quantiles over all iterations')
 
 for(i in seq_along(l_rez)){
