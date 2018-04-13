@@ -603,7 +603,7 @@ process_invariance_tests <- function(invar_models_list, factor_name, fit_measure
 #'
 #' @return
 #' @export
-test_factors_for_invariance <- function(factor_names, indicators_df, item_data, fit_measures = c('mfi', 'cfi', 'rmsea', 'rmsea.ci.lower', 'rmsea.ci.upper'), group, save_fits = F, drop_items = NULL, ...){
+test_factors_for_invariance <- function(factor_names, indicators_df, item_data, fit_measures = c('mfi', 'cfi', 'rmsea', 'rmsea.ci.lower', 'rmsea.ci.upper'), group, save_fits = F, data_dir = NULL, drop_items = NULL, ...){
   require(future)
   invar_mods_future_listenv <- listenv::listenv()
   for(fn in seq_along(factor_names)){
@@ -630,9 +630,14 @@ test_factors_for_invariance <- function(factor_names, indicators_df, item_data, 
     factor_name <- factor_names[[fn]]
     a_factor_invariance_suite <- lapply(as.list(invar_mods_future_listenv[[fn]]), future::value)
     if(save_fits){
-      message(paste0('Saving: ', factor_name))
+      if(!dir.exists(data_dir)){
+        message(paste0('Creating dir: ', data_dir))
+        dir.create(data_dir)
+      }
+      asavefn <- file.path(data_dir, paste0(factor_name, '_invariance_mods.RDS'))
+      message(paste0('Saving ', factor_name, ' fits to ', asavefn, '...'))
       saveRDS(a_factor_invariance_suite,
-              file.path(data_dir, paste0(factor_name, '_invariance_mods.RDS')))
+              asavefn)
     }
     procd_invar_stats_listenv[[fn]] <- process_invariance_tests(
       invar_models_list = a_factor_invariance_suite,
