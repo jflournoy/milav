@@ -603,12 +603,17 @@ process_invariance_tests <- function(invar_models_list, factor_name, fit_measure
 #'
 #' @return
 #' @export
-test_factors_for_invariance <- function(factor_names, indicators_df, item_data, fit_measures = c('mfi', 'cfi', 'rmsea', 'rmsea.ci.lower', 'rmsea.ci.upper'), group, save_fits = F, ...){
+test_factors_for_invariance <- function(factor_names, indicators_df, item_data, fit_measures = c('mfi', 'cfi', 'rmsea', 'rmsea.ci.lower', 'rmsea.ci.upper'), group, save_fits = F, drop_items = NULL, ...){
   require(future)
   invar_mods_future_listenv <- listenv::listenv()
   for(fn in seq_along(factor_names)){
     factor_name <- factor_names[[fn]]
     factor_items <- get_factor_items(indicators_df, factor_name)
+    if(!is.null(drop_items)){
+      message('Dropping item(s): ', paste(drop_items[factor_name], collapse = ', '))
+      keep_idx <- !factor_items %in% drop_items[factor_name]
+      factor_items <- factor_items[keep_idx]
+    }
     if(!check_manifests_exist(factor_items, item_data)) {
       stop(factor_name, ' does not have item columns in item_data')
     }
