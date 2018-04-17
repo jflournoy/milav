@@ -646,3 +646,49 @@ test_factors_for_invariance <- function(factor_names, indicators_df, item_data, 
   }
   return(as.list(procd_invar_stats_listenv))
 }
+
+#' Create lavaan CFA model from psych keylist
+#'
+#' @param keylist keylist
+#'
+#' @return lavaan model text
+#' @export
+create_cfa_from_keylist <- function(keylist){
+    cfa_model_text <- paste(
+        paste0(
+            names(keylist),
+            ' =~ ',
+            lapply(keylist, function(items){
+                paste(
+                    gsub(pattern = '^-', replacement = '', x = items),
+                    collapse = ' + ')
+
+            })),
+        collapse = '\n')
+}
+
+#' get_items_from_keys
+#'
+#' @param keylist keylist
+#'
+#' @return
+#' @export
+get_items_from_keys <- function(keylist){
+    items <- lapply(keylist,
+               gsub, pattern = '^-', replacement = '')
+    return(items)
+}
+
+#' make_factor_string
+#'
+#' @param items items
+#' @param factor_name factor_name
+#'
+#' @return
+#' @export
+make_factor_string <- function(items, factor_name){
+    factor_string <- paste0(factor_name, ' =~ ',
+                            paste(unlist(items),
+                                  collapse = ' + '))
+    return(factor_string)
+}

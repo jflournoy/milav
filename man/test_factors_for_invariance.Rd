@@ -6,7 +6,7 @@
 \usage{
 test_factors_for_invariance(factor_names, indicators_df, item_data,
   fit_measures = c("mfi", "cfi", "rmsea", "rmsea.ci.lower", "rmsea.ci.upper"),
-  group, save_fits = F, ...)
+  group, save_fits = F, data_dir = NULL, drop_items = NULL, ...)
 }
 \arguments{
 \item{factor_names}{factor_names}
