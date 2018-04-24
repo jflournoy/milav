@@ -472,7 +472,8 @@ run_invariance_model <- function(factor_name, manifest_vec, item_data, type = 'b
     manifest_vec,
     type = type,
     num_groups = num_groups)
-
+  
+  message('Factor name: ', factor_name, '; type: ', type)
   if(is.null(group)){
     a_fit <- try(sem_invar(model = an_invar_model,
                            data = item_data,
