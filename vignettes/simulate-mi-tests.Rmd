@@ -24,6 +24,7 @@ knitr::opts_chunk$set(
 ```{r}
 library(milav)
 library(future)
+library(semTools)
 if(grepl('(^n\\d|talapas-ln1)', system('hostname', intern = T))){
   nworkers <- 28
   data_dir <- '/gpfs/projects/dsnlab/flournoy/data/mi_sim_results'
@@ -41,7 +42,7 @@ if(!dir.exists(data_dir)){
   dir.create(data_dir)
 }
 
-mitest <- function(generative_mod, unconstrained_mod, constrained_mod, fit_measures, sample_nobs = c(2.5e2,2.5e2,2.5e2,2.5e2), return_all = F){
+mitest <- function(generative_mod, unconstrained_mod, constrained_mod, fit_measures, more_fit_measures = NULL, sample_nobs = c(2.5e2,2.5e2,2.5e2,2.5e2), return_all = F){
   simdata <- lavaan::simulateData(generative_mod, 
                                   sample.nobs = sample_nobs,
                                   int.lv.free = T, 
@@ -54,9 +55,17 @@ mitest <- function(generative_mod, unconstrained_mod, constrained_mod, fit_measu
     do.call(rbind, 
             lapply(list(unconstrained_fit, constrained_fit),
                    lavaan::fitmeasures, fit.measures = fit_measures)))
+  if(!is.null(more_fit_measures)){
+    more_fit_diff <- diff(
+    do.call(rbind, 
+            lapply(list(unconstrained_fit, constrained_fit),
+                   semTools::moreFitIndices, fit.measures = more_fit_measures)))
+    fit_diff <- cbind(fit_diff, more_fit_diff)
+  }
   if(return_all){
     return(list(fit_diff = fit_diff, 
-                data = simdata, 
+                data = simdata,
+                generative_mod = generative_mod,
                 unconstrained_fit = unconstrained_fit, 
                 constrained_fit = constrained_fit))
   }
@@ -75,7 +84,7 @@ create_generative_mod <- function(nitems, loadings_from, loadings_to){
   return(generative_mod)
 }
 
-run_mi_sims <- function(niter, nitems, loadings_from, loadings_to, unconstrained_mod, constrained_mod, fit_measures, sample_nobs = c(2.5e2,2.5e2,2.5e2,2.5e2)) {
+run_mi_sims <- function(niter, nitems, loadings_from, loadings_to, unconstrained_mod, constrained_mod, fit_measures, more_fit_measures = NULL, sample_nobs = c(2.5e2,2.5e2,2.5e2,2.5e2)) {
   require(future)
   require(listenv)
   fit_diffs <- listenv::listenv()
@@ -91,6 +100,7 @@ run_mi_sims <- function(niter, nitems, loadings_from, loadings_to, unconstrained
                          unconstrained_mod = unconstrained_mod,
                          constrained_mod = constrained_mod,
                          fit_measures = fit_measures,
+                         more_fit_measures = more_fit_measures,
                          sample_nobs = sample_nobs, 
                          return_all = F)
       fit_diff
@@ -99,44 +109,40 @@ run_mi_sims <- function(niter, nitems, loadings_from, loadings_to, unconstrained
   return(fit_diffs)
 }
 
-nitems <- 4
 fit_measures <- c('mfi', 'cfi', 'rmsea')
-long_strict_mod <- milav::create_lav_invariance_model(factor_name = 'F',
-                                   manifest_vec = paste0('x', 1:nitems),
-                                   'long_strict')
-group_strict_mod <- milav::create_lav_invariance_model(factor_name = 'F',
-                                   manifest_vec = paste0('x', 1:nitems),
-                                   'strict')
+more_fit_measures <- c('gammaHat', 'adjGammaHat')
 savefile <- file.path(data_dir, 'mi_simulation_results.RDS')
+
+properties_df <- expand.grid(loadings_from = seq(.5, .9, .1), nitems = c(4,6,8))
+properties_df$loadings_to <- properties_df$loadings_from + .09
+properties_df <- properties_df[1,]
 
 if(!file.exists(savefile)){
   l_fut <- listenv::listenv()
-  l_fut[['Loadings .40 - .49']] <- run_mi_sims(
-    niter = niter, nitems = 4, loadings_from = .4, loadings_to = .5, 
-    unconstrained_mod = long_strict_mod, constrained_mod = group_strict_mod,
-    fit_measures = fit_measures)
-  l_fut[['Loadings .5 - .59']] <- run_mi_sims(
-    niter = niter, nitems = 4, loadings_from = .5, loadings_to = .59, 
-    unconstrained_mod = long_strict_mod, constrained_mod = group_strict_mod,
-    fit_measures = fit_measures)
-  l_fut[['Loadings .6 - .69']] <- run_mi_sims(
-    niter = niter, nitems = 4, loadings_from = .6, loadings_to = .69, 
-    unconstrained_mod = long_strict_mod, constrained_mod = group_strict_mod,
-    fit_measures = fit_measures)
-  l_fut[['Loadings .7 - .79']] <- run_mi_sims(
-    niter = niter, nitems = 4, loadings_from = .7, loadings_to = .79, 
-    unconstrained_mod = long_strict_mod, constrained_mod = group_strict_mod,
-    fit_measures = fit_measures)
-  l_fut[['Loadings .8 - .89']] <- run_mi_sims(
-    niter = niter, nitems = 4, loadings_from = .8, loadings_to = .89, 
-    unconstrained_mod = long_strict_mod, constrained_mod = group_strict_mod,
-    fit_measures = fit_measures)
-  l_fut[['Loadings .9 - .99']] <- run_mi_sims(
-    niter = niter, nitems = 4, loadings_from = .9, loadings_to = .99, 
-    unconstrained_mod = long_strict_mod, constrained_mod = group_strict_mod,
-    fit_measures = fit_measures)
+  for(i in 1:nrow(properties_df)){
+    long_strict_mod <- milav::create_lav_invariance_model(
+      factor_name = 'F',
+      manifest_vec = paste0('x', 1:properties_df$nitems[[i]]),
+      'long_strict')
+    group_strict_mod <- milav::create_lav_invariance_model(
+      factor_name = 'F',
+      manifest_vec = paste0('x', 1:properties_df$nitems[[i]]),
+      'strict')
+    l_fut[[i]] <- run_mi_sims(
+      niter = niter, nitems = properties_df$nitems[[i]], 
+      loadings_from = properties_df$loadings_from[[i]], 
+      loadings_to = properties_df$loadings_to[[i]], 
+      unconstrained_mod = long_strict_mod, constrained_mod = group_strict_mod,
+      fit_measures = fit_measures,
+      more_fit_measures = more_fit_measures)
+  }
   
   l_rez <- lapply(l_fut, lapply, future::value)
+  names(l_rez) <- paste0('Loadings: ', 
+                         properties_df$loadings_from, ' - ', 
+                         properties_df$loadings_to,
+                         '; N items: ', 
+                         properties_df$nitems)
   saveRDS(l_rez, file = file.path(data_dir, 'mi_simulation_results.RDS'))
   
 } else {
@@ -220,5 +226,21 @@ nope <- lapply(seq_along(l_rez), function(i, l, n){
 ```{r cfiplots, fig.width=6, fig.height=5}
 nope <- lapply(seq_along(l_rez), function(i, l, n){
   print(plot_mi_rez(do.call(rbind, l[[i]]), 'cfi', i, n))
+}, l = l_rez, n = names(l_rez))
+```
+
+## Gamma-hat ($\hat{\gamma}$) Plots
+
+```{r gammahatplots, fig.width=6, fig.height=5}
+nope <- lapply(seq_along(l_rez), function(i, l, n){
+  print(plot_mi_rez(do.call(rbind, l[[i]]), 'gammaHat', i, n))
+}, l = l_rez, n = names(l_rez))
+```
+
+## Adjusted Gamma-hat ($\hat{\gamma}$) Plots
+
+```{r adjgammahatplots, fig.width=6, fig.height=5}
+nope <- lapply(seq_along(l_rez), function(i, l, n){
+  print(plot_mi_rez(do.call(rbind, l[[i]]), 'adjGammaHat', i, n))
 }, l = l_rez, n = names(l_rez))
 ```
