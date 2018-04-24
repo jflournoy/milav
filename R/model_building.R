@@ -610,9 +610,10 @@ test_factors_for_invariance <- function(factor_names, indicators_df, item_data, 
     factor_name <- factor_names[[fn]]
     factor_items <- get_factor_items(indicators_df, factor_name)
     if(!is.null(drop_items)){
-      message('Dropping item(s): ', paste(drop_items[factor_name], collapse = ', '))
-      keep_idx <- !factor_items %in% drop_items[factor_name]
+      message('Dropping item(s): ', paste(drop_items[[factor_name]], collapse = ', '))
+      keep_idx <- !factor_items %in% drop_items[[factor_name]]
       factor_items <- factor_items[keep_idx]
+      message('Using items: ', paste(factor_items, collapse = ', '))
     }
     if(!check_manifests_exist(factor_items, item_data)) {
       stop(factor_name, ' does not have item columns in item_data')
