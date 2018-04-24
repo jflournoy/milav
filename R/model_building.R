@@ -515,8 +515,8 @@ run_invariance_tests <- function(factor_name, manifest_vec, item_data, group, ..
 
   invar_models_future_listenv <- listenv::listenv()
   for(it in seq_along(all_invar_types)){
+    message(paste0("Running: ", factor_name, ", ", all_invar_types[[it]]))
     invar_models_future_listenv[[it]] <- future::future({
-      message(paste0("Running: ", factor_name, ", ", all_invar_types[[it]]))
       try(run_invariance_model(factor_name,
                                manifest_vec,
                                item_data,
