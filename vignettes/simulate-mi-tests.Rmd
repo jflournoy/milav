@@ -84,7 +84,7 @@ create_generative_mod <- function(nitems, loadings_from, loadings_to){
   return(generative_mod)
 }
 
-run_mi_sims <- function(niter, nitems, loadings_from, loadings_to, unconstrained_mod, constrained_mod, fit_measures, more_fit_measures = NULL, sample_nobs = c(2.5e2,2.5e2,2.5e2,2.5e2)) {
+run_mi_sims <- function(niter, nitems, loadings_from, loadings_to, unconstrained_mod, constrained_mod, fit_measures, more_fit_measures = NULL, sample_nobs = c(2.5e2,2.5e2,2.5e2,2.5e2), return_all = F) {
   require(future)
   require(listenv)
   fit_diffs <- listenv::listenv()
@@ -102,7 +102,7 @@ run_mi_sims <- function(niter, nitems, loadings_from, loadings_to, unconstrained
                          fit_measures = fit_measures,
                          more_fit_measures = more_fit_measures,
                          sample_nobs = sample_nobs, 
-                         return_all = F)
+                         return_all = return_all)
       fit_diff
     })   
   }
@@ -115,7 +115,6 @@ savefile <- file.path(data_dir, 'mi_simulation_results.RDS')
 
 properties_df <- expand.grid(loadings_from = seq(.5, .9, .1), nitems = c(4,6,8))
 properties_df$loadings_to <- properties_df$loadings_from + .09
-properties_df <- properties_df[1,]
 
 if(!file.exists(savefile)){
   l_fut <- listenv::listenv()
@@ -148,6 +147,20 @@ if(!file.exists(savefile)){
 } else {
   l_rez <- readRDS(savefile)
 }
+```
+
+# The model
+
+```{r eval = F}
+asim_f <- run_mi_sims(
+      niter = niter, nitems = properties_df$nitems[[1]], 
+      loadings_from = properties_df$loadings_from[[1]], 
+      loadings_to = properties_df$loadings_to[[1]], 
+      unconstrained_mod = long_strict_mod, constrained_mod = group_strict_mod,
+      fit_measures = fit_measures,
+      more_fit_measures = more_fit_measures, return_all = T)
+asim <- value(asim_f[[1]])
+semPlot::semPaths(asim$constrained_fit, include = 1, ask = F)
 ```
 
 # Result tables
