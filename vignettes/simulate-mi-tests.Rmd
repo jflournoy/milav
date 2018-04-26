@@ -12,10 +12,14 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+# Introduction
+
+I wanted to make sure that recommendations regarding McDonald's non-centrality index and $\hat\gamma$ applied well to the Life in Time measurement models (see below references). To check this, I generated data from a group-invariant model, and compared these fit indices when group-invariant versus non-invariant models were estimated using those data. The results are below.
+
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  warning = T, message = F, error = T, echo = T,
+  warning = T, message = F, error = T, echo = F,
   collapse = T,
   comment = "#>"
 )
@@ -151,7 +155,17 @@ if(!file.exists(savefile)){
 
 # The model
 
-```{r eval = F}
+Each iteration evaluates the fit to the below model, either with loadings, intercepts, and residual variances constrained to be the same across 4 groups, or unconstrained. Strict longitudinal invariance is assumed in all models. Conditions vary the number of items per factor (the 4 item case is pictured below), and the strength of loadings. Each iteration draws the loadings randomly from a uniform distribution in a certain range.
+
+```{r eval = T, fig.width=6, fig.height=5}
+long_strict_mod <- milav::create_lav_invariance_model(
+  factor_name = 'F',
+  manifest_vec = paste0('x', 1:properties_df$nitems[[1]]),
+  'long_strict')
+group_strict_mod <- milav::create_lav_invariance_model(
+  factor_name = 'F',
+  manifest_vec = paste0('x', 1:properties_df$nitems[[1]]),
+  'strict')
 asim_f <- run_mi_sims(
       niter = niter, nitems = properties_df$nitems[[1]], 
       loadings_from = properties_df$loadings_from[[1]], 
@@ -161,6 +175,95 @@ asim_f <- run_mi_sims(
       more_fit_measures = more_fit_measures, return_all = T)
 asim <- value(asim_f[[1]])
 semPlot::semPaths(asim$constrained_fit, include = 1, ask = F)
+```
+
+# Variations across items and loadings
+
+Values in the region above the shaded regions would lead us to conclude that measurement is invariant across group. Values below the shaded regions would lead us to reject the hypothesis of invariance.
+
+```{r fig.width=6, fig.height=5}
+all_df <- tidyr::extract(
+  dplyr::bind_rows(lapply(l_rez, function(l) as.data.frame(do.call(what = rbind, t(l)))),
+                           .id = 'model'),
+  model, 
+  c('loading', 'nitems'), 
+  'Loadings: (.*); N items: (\\d+)')
+
+all_df_quant <- dplyr::summarise_at(
+  dplyr::group_by(all_df, loading, nitems),
+  dplyr::vars('gammaHat', 'mfi', 'cfi'),
+  dplyr::funs(
+    '.005' = quantile(., probs = c(.005)),
+    '.01' = quantile(., probs = c(.01)),
+    '.05' = quantile(., probs = c(.05)),
+    '.50' = quantile(., probs = c(.50))))
+
+ggplot2::ggplot(all_df_quant,
+                ggplot2::aes(x = as.numeric(nitems), y = cfi_.01, linetype = loading))+
+  ggplot2::geom_ribbon(ggplot2::aes(ymin = cfi_.005, ymax = cfi_.05),
+                       alpha = .2)+
+  ggplot2::geom_point()+
+  ggplot2::geom_line()+
+  ggplot2::geom_text(ggplot2::aes(x = 8.3, 
+                                  y = cfi_.01, 
+                                  label = loading), 
+                     data = all_df_quant[all_df_quant$nitems==8,],
+                     size = 3.5)+
+  ggplot2::coord_cartesian(xlim = c(4, 8.5)) +
+  ggplot2::theme(legend.position="none") + 
+  ggplot2::labs(title = 'CFI distribution under null of invariance',
+                subtitle = '1000 iterations per condition',
+                x = 'Number of items',
+                y = 'CFI',
+                caption = 'Lines are at 1%-ile, labeled by range of loadings. 
+                Shaded regions encompass the distribution range of [5%, 0.5%]')
+
+
+ggplot2::theme_set(ggplot2::theme_minimal())
+ggplot2::ggplot(all_df_quant,
+                ggplot2::aes(x = as.numeric(nitems), y = mfi_.01, linetype = loading))+
+  ggplot2::geom_ribbon(ggplot2::aes(ymin = mfi_.005, ymax = mfi_.05),
+                       alpha = .2)+
+  ggplot2::geom_point()+
+  ggplot2::geom_line()+
+  ggplot2::geom_text(ggplot2::aes(x = 8.3, 
+                                  y = mfi_.01+c(.00032, -.00029, -.0000, 0, 0), 
+                                  label = loading), 
+                     data = all_df_quant[all_df_quant$nitems==8,],
+                     size = 3.5)+
+  ggplot2::coord_cartesian(ylim = c(0,-.0175), xlim = c(4, 8.5)) +
+  ggplot2::scale_y_continuous(breaks = c(0, -.007, -.01, -.012, -.014)) + 
+  ggplot2::theme(legend.position="none") + 
+  ggplot2::labs(title = 'MFI distribution under null of invariance',
+                subtitle = '1000 iterations per condition',
+                x = 'Number of items',
+                y = 'McDonald\'s noncentrality index',
+                caption = 'Lines are at 1%-ile, labeled by range of loadings. 
+                Shaded regions encompass the distribution range of [5%, 0.5%]')
+
+
+ggplot2::ggplot(all_df_quant,
+                ggplot2::aes(x = as.numeric(nitems), y = gammaHat_.01, linetype = loading))+
+  ggplot2::geom_ribbon(ggplot2::aes(ymin = gammaHat_.005, ymax = gammaHat_.05),
+                       alpha = .2)+
+  ggplot2::geom_point()+
+  ggplot2::geom_line()+
+  ggplot2::geom_text(ggplot2::aes(x = 8.3, 
+                                  y = gammaHat_.01+c(.00009, -.00000, -.0000, 0, 0), 
+                                  label = loading), 
+                     data = all_df_quant[all_df_quant$nitems==8,],
+                     size = 3.5)+
+  ggplot2::coord_cartesian(ylim = c(0,-.0045), xlim = c(4, 8.5)) +
+  ggplot2::scale_y_continuous(breaks = c(0, -.0015, -.0025, -.003, -.0004)) + 
+  ggplot2::theme(legend.position="none") + 
+  ggplot2::labs(title = expression(paste('Distribution of ', hat(gamma), ' under null of invariance')),
+                subtitle = '1000 iterations per condition',
+                x = 'Number of items',
+                y = expression(hat(gamma)),
+                caption = 'Lines are at 1%-ile, labeled by range of loadings. 
+                Shaded regions encompass the distribution range of [5%, 0.5%]')
+
+
 ```
 
 # Result tables
@@ -182,6 +285,7 @@ for(i in seq_along(l_rez)){
 ```
 
 # Result plots
+
 ```{r echo=F}
 plot_mi_rez <- function(df, xvar, i, n){
   mfi.q <- quantile(df[,which(colnames(df) == xvar)], probs = c(.01, .05, .5))
@@ -220,13 +324,12 @@ plot_mi_rez <- function(df, xvar, i, n){
 ```
 
 
-```{r echo=F}
+```{r fig.width=6, fig.height=5}
 plot_mi_rez(all, xvar = 'mfi', i = 1, c('All MFI'))
+plot_mi_rez(all, xvar = 'gammaHat', i = 1, c('All gammaHat'))
 ```
 
 ## MFI Plots
-
-
 
 ```{r mfiplots, fig.width=6, fig.height=5}
 nope <- lapply(seq_along(l_rez), function(i, l, n){
@@ -257,3 +360,10 @@ nope <- lapply(seq_along(l_rez), function(i, l, n){
   print(plot_mi_rez(do.call(rbind, l[[i]]), 'adjGammaHat', i, n))
 }, l = l_rez, n = names(l_rez))
 ```
+
+# References
+
+Kang, Y., McNeish, D. M., & Hancock, G. R. (2016). The Role of Measurement Quality on Practical Guidelines for Assessing Measurement and Structural Invariance. Educational and Psychological Measurement, 76(4), 533–561. https://doi.org/10.1177/0013164415603764
+
+McNeish, D., An, J., & Hancock, G. R. (2018). The Thorny Relation Between Measurement Quality and Fit Index Cutoffs in Latent Variable Models. Journal of Personality Assessment, 100(1), 43–52. https://doi.org/10.1080/00223891.2017.1281286
+
