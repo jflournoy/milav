@@ -1,4 +1,4 @@
-[![DOI](https://zenodo.org/badge/96470945.svg)](https://zenodo.org/badge/latestdoi/96470945)
+[![DOI](https://zenodo.org/badge/129271129.svg)](https://zenodo.org/badge/latestdoi/129271129)
 
 # milav: Measurement Invariance in lavaan
 
