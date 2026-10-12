@@ -7,7 +7,7 @@ Authors@R: person("John C.", "Flournoy", email = "flournoy@uoregon.edu",
 Description: For now, this is only useful as part of the Life in Time Project 
   infrastructure. This work benefited from access to the University of Oregon 
   high performance computer, Talapas.
-License: What license is it under?
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
