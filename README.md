@@ -4,13 +4,13 @@
 
 This package exists mostly to collect functions I wrote for performing measurement invariance model comparisons for the Life and Time study.
 
-This package also showcases the [results of simulations of changes in fit indices](https://jflournoy.github.io/milav/articles/simulate-mi-tests.html) in order to evaluate reasonable cutoffs based on the 4-group, 4-wave structure of the data in that study.
+This package also showcases the [results of simulations of changes in fit indices](https://johnflournoy.science/milav/articles/simulate-mi-tests.html) in order to evaluate reasonable cutoffs based on the 4-group, 4-wave structure of the data in that study.
 
 ## What the simulation shows
 
 Invariance tests usually compare a constrained model to a freer one and reject invariance when a fit index drops by more than a fixed amount, most often the cutoffs from Cheung and Rensvold (2002): ΔCFI ≤ −.01, ΔMcDonald's noncentrality index (MFI) ≤ −.02, and Δγ̂ ≤ −.001. Those cutoffs were not derived for this design, and later work showed that fit-index cutoffs shift with measurement quality (Kang et al., 2016; McNeish et al., 2018). So I simulated the null directly.
 
-**Design.** Data were generated from a single-factor model that is strictly invariant across 4 groups (n = 250 each). Each dataset was fit twice, with loadings, intercepts, and residual variances either free across groups or constrained equal, and the change in fit was recorded. Because invariance holds in the generating model, the lower tail of each distribution is the cutoff that would give a known false-rejection rate. Fifteen conditions crossed 4, 6, or 8 items with loadings drawn uniformly within bands from .50–.59 to .90–.99, with 1,000 replications each.
+**Design.** Data were generated from a single-factor model that is strictly invariant across 4 groups, which stand in for the study's 4 waves (n = 250 each). Each dataset was fit twice, with loadings, intercepts, and residual variances either free across groups or constrained equal, and the change in fit was recorded. Because invariance holds in the generating model, the lower tail of each distribution is the cutoff that would give a known false-rejection rate. Fifteen conditions crossed 4, 6, or 8 items with loadings drawn uniformly within bands from .50–.59 to .90–.99, with 1,000 replications each.
 
 **Results.** Each range below is the 1st percentile under the null, across the 15 conditions.
 
@@ -20,7 +20,7 @@ Invariance tests usually compare a constrained model to a freer one and reject i
 
 Pooled over all conditions, the 1st percentiles are ΔMFI −.012, ΔCFI −.006, and Δγ̂ −.0026.
 
-**Scope.** These numbers apply to this design: one factor, 4 groups of 250, and the strict constraint set described above. Other sample sizes, group counts, or model structures will move the distributions, so rerun the vignette with your own structure rather than borrowing these cutoffs.
+**Scope.** These numbers apply to this design: one factor, 4 groups (waves) of 250, and the strict constraint set described above. Other sample sizes, group counts, or model structures will move the distributions, so rerun the vignette with your own structure rather than borrowing these cutoffs.
 
 ## Status
 
